@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-public class player : NetworkBehaviour {
+public class player : NetworkBehaviour
+{
 
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
-   // [SyncVar]
+    // [SyncVar]
     public int playercolor;
 
     [SyncVar]
@@ -27,6 +28,7 @@ public class player : NetworkBehaviour {
     public int score;
     private float floatscore;
     private float itemtime = 3;
+    private bool colroset = false;
     private void Start()
     {
         characterUI = GameObject.FindGameObjectWithTag("characterui");
@@ -37,7 +39,8 @@ public class player : NetworkBehaviour {
 
     }
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
 
         if (thegamemanager.GetComponent<gamemanagerment>().m_gamestate != gamemanagerment.CTF_GameState.Ingame)
         {
@@ -47,25 +50,13 @@ public class player : NetworkBehaviour {
         {
             return;
         }
-        switch (playercolor)
-        {
-            case 1:
-                this.GetComponent<MeshRenderer>().material.color = Color.red;
-                break;
-            case 2:
-                this.GetComponent<MeshRenderer>().material.color = Color.green;
-                break;
-            case 3:
-                this.GetComponent<MeshRenderer>().material.color = Color.blue;
-                break;
-            case 4:
-                this.GetComponent<MeshRenderer>().material.color = Color.yellow;
-                break;
-            default:
-                break;
 
+        if (colroset == false)
+        {
+            resettheplayercolor();
+            colroset = true;
         }
-        Cmdchangecolor();
+
 
         if (GetComponent<Health>().flag != null && GetComponent<Health>().flag.transform.parent != null)
         {
@@ -79,7 +70,7 @@ public class player : NetworkBehaviour {
             if (itemtime <= 0)
             {
                 item = 0;
-                itemtime = 5;
+                itemtime = 7;
                 Cmdchangematerial();
 
             }
@@ -104,10 +95,16 @@ public class player : NetworkBehaviour {
         }
     }
 
+    void resettheplayercolor()
+    {
+
+        Cmdchangecolor();
+    }
+
     [Command]
     void Cmdchangecolor()
     {
-        
+
         Rpcchangecolor();
     }
 
@@ -139,7 +136,7 @@ public class player : NetworkBehaviour {
     {
 
         Rpcchangeimmuematerial();
-       
+
     }
     [ClientRpc]
     void Rpcchangeimmuematerial()
@@ -148,22 +145,19 @@ public class player : NetworkBehaviour {
     }
 
     [Command]
-    void Cmdchangematerial() {
-       
+    void Cmdchangematerial()
+    {
+
         Rpcchangematerial();
     }
 
     [ClientRpc]
     void Rpcchangematerial()
     {
-      
+
         GetComponent<player>().rotationspeed = 150.0f;
-       GetComponent<player>().walkspeed = 3.0f;
-        this.GetComponent<Renderer>().material.color = Color.red;
-        if(isLocalPlayer)
-        {
-            this.GetComponent<Renderer>().material.color = Color.yellow;
-        }
+        GetComponent<player>().walkspeed = 3.0f;
+        resettheplayercolor();
         item = 0;
     }
 
@@ -194,17 +188,17 @@ public class player : NetworkBehaviour {
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-       
-        
+
+
     }
-   
+
     public override void OnStartLocalPlayer()
     {
 
-         this.GetComponent<MeshRenderer>().material.color = Color.yellow;
+        this.GetComponent<MeshRenderer>().material.color = Color.yellow;
 
 
-       
+
     }
 
 
@@ -212,7 +206,7 @@ public class player : NetworkBehaviour {
     //[Command]
     public void Cmdimmuestatetrigger()
     {
-      
+
 
         item = 1;
     }

@@ -69,11 +69,9 @@ public class Health : NetworkBehaviour
         {
             currentHealth -= amount;
         }
-        Debug.Log(this.GetComponent<player>().item);
         if (currentHealth <= 0)
         {
             if(flag != null)
-           //if(hashag)
             {
               
                 Rpcchangeflag();
@@ -87,10 +85,6 @@ public class Health : NetworkBehaviour
     [ClientRpc]
     void Rpcchangeflag()
     {
-
-      
-
-        
         Vector3 tempplayerposition = transform.position;
         flag.transform.position = transform.position;
 
@@ -106,8 +100,19 @@ public class Health : NetworkBehaviour
     [ClientRpc]
     void Rpcflagavabile()
     {
-        flag.GetComponent<flag>().m_state = global::flag.State.Available;
-        flag = null;
+        if(flag == null)
+        {
+            Debug.Log(true);
+            GameObject templag = GameObject.FindGameObjectWithTag("flag");
+            templag.GetComponent<flag>().m_state = global::flag.State.Available;
+            
+        }
+        else
+        {
+            flag.GetComponent<flag>().m_state = global::flag.State.Available;
+            flag = null;
+        }
+       
     }
     void OnChangeHealth(int currentHealth)
     {
